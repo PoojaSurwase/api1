@@ -1,0 +1,25 @@
+import requests, pprint
+header  = {
+    "access_token" : "fe66583bfe5185048c66571293e0d358"
+}
+
+try:
+    limit=100
+    num_record = 500
+    offset = 1
+    records =  [] 
+    while(offset <= num_record):
+         response = requests.get(f"https://globalmart-api.onrender.com/mentorskool/v1/sales?offset={offset}&limit={limit}",
+         headers = header).json()
+         records = records+response["data"]
+         offset= int(response["next"].split('&')[0][-3:])
+    print(len[records])
+    pprint.pprint(records)
+except IndexError: 
+    print("invalid")
+except requests.exceptions.HTTPError as herr:  
+    print(herr)
+except requests.exceptions.RequestException as err:  
+    print (err)
+
+
