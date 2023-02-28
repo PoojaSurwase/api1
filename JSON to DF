@@ -1,0 +1,41 @@
+import requests
+import json
+import pandas as pd
+header = {
+    "access_token": "fe66583bfe5185048c66571293e0d358"
+}
+offset=1
+limit=100
+records_to_fetch = 500
+param = {
+    "offset":offset,
+    "limit":limit
+}
+url="https://globalmart-api.onrender.com"
+try:
+    response = requests.get(url+"/mentorskool/v1/sales",params= param, headers= header)
+    response.raise_for_status()
+except requests.exceptions.HTTPError as err:
+    print(str(err))
+except requests.ConnectionError as e:
+    print("connection Error.")
+
+json_response = response.json()
+current_fetched_records = limit
+sales_data =json_response['data']
+try:
+     while current_fetched_records< records_to_fetch:
+           response = requests.get(url + json_response['next'],headers= header)
+           sales_data.extend(json_response['data'])
+           current_fetched_records = current_fetched_records + limit
+except requests.exceptions.HTTPError as err:
+       print(str(err))
+except requests.ConnectionError as e:
+ print("Connection Error.")
+
+
+df = pd.json_normalize(sales_data)
+df = df.filter(['id','sales_amt','qty','discount','profit_amt','order.order_id','order.order_purchase_date'
+                ,'order.order_status','order.prder_delivered_customer_date','order.order_estimated_delivery_date','product.product_id,'
+                'product.colors','product.category','order.customer.customer_id','order.customer.customer_name','order.vendor.vendorID'])
+df.to_csv('sales-100.csv')
