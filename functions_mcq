@@ -1,3 +1,4 @@
+
 import pandas as pd
 
 def productSizes(df, product_name):
@@ -21,7 +22,8 @@ def productSizes(df, product_name):
 
 
 
-df = pd.read_csv('GlobalMartData.csv')
+#df = pd.read_csv('GlobalMart.csv')
+df = pd.read_csv('GlobalMart.csv',encoding='latin-1')
 print(type(df))
 
 ### Data cleaning
