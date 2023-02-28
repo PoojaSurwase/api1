@@ -1,0 +1,20 @@
+import pandas as pd 
+def checkdays(day):
+    weekend =['saturday','sunday']
+    if day in weekend:
+        return 'weekend'
+    else:
+        return 'weekday'
+    
+data = pd.read_csv('sales-100.csv')
+data['day_of_order']= data["order_purchase_date"].dt.day_of_week
+data['day_label']= data['day_of_order'].apply(lambda x: "weekend" if(x == 5 or x == 6 ) else "weekday")
+
+df_groupby = data.groupby(["day_label"], as_index =False)["sales_amt"].sum().round(2)
+print(df_groupby)
+
+
+#highest sales in market 
+
+df_groupby_category = df.groupby(["category"], as_index= False)["sales_amt"].sum()
+print(df_groupby_category.loc[df_groupby_category["sales_amt"].idmax()])
