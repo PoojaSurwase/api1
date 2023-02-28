@@ -1,0 +1,54 @@
+import pandas as pd
+
+def productSizes(df, product_name):
+    '''
+    This function accepts the data frame and name of the product and returns the list of sizes 
+    of that specific product that they have in stock.
+
+    Args:
+    df(DataFrame) : Pandas DataFrame of data returned by GlobalMart API.
+    product_name(Object): Name of product for which we want sizes.
+
+    Returns:
+    list: The list of all sizes available for input product.
+    '''
+    
+    sizes  = df.loc[df['product.product_name'] == product_name,'product.sizes'].values[0]
+    sizes = str(sizes).split(',')
+    if sizes == ['nan']:
+        return []
+    return sizes
+
+
+
+df = pd.read_csv('GlobalMartData.csv')
+print(type(df))
+
+### Data cleaning
+# Check for missing values
+print(df.isnull().sum())
+
+# Check for duplicate records
+print("duplicated records are:",df.duplicated().sum())
+# Drop duplicate records
+df.drop_duplicates(inplace=True)
+
+# Check for datatype corrections
+df['order.order_purchase_date'] = pd.to_datetime(df['order.order_purchase_date'])
+df['order.order_delivered_carrier_date'] = pd.to_datetime(df['order.order_delivered_carrier_date'])
+df['order.order_delivered_customer_date'] = pd.to_datetime(df['order.order_delivered_customer_date'])
+df['order.order_estimated_delivery_date'] = pd.to_datetime(df['order.order_estimated_delivery_date'])
+
+# testing lines
+# print(set(df['product.product_name']))
+# sizes = productSizes(df, 'Panasonic Kx-TS550')
+# print(type(sizes), sizes, len(sizes))
+
+
+# Determine product which available in most of the sizes.
+product_size_range = [len(productSizes(df, product)) for product in df['product.product_name']]
+idx = product_size_range.index(max(product_size_range))
+print("product having maximum range of sizes available is:",df['product.product_name'][idx])
+
+# Determine range of sizes available for product 'Mitel 5320 IP Phone VoIP phone'.
+print("range available for 'Mitel 5320 IP Phone VoIP phone':", len(productSizes(df, 'Mitel 5320 IP Phone VoIP phone')))
